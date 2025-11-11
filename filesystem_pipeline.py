@@ -15,12 +15,14 @@ def stream_and_merge_csv() -> None:
     """Demonstrates how to scan folder with csv files, load them in chunk and merge on date column with the previous load"""
     pipeline = dlt.pipeline(
         pipeline_name="standard_filesystem_csv",
-        destination='duckdb',
+        destination="duckdb",
         dataset_name="met_data",
     )
     # met_data contains 3 columns, where "date" column contain a date on which we want to merge
     # load all csvs in A801
-    met_files = readers(bucket_url=TESTS_BUCKET_URL, file_glob="met_csv/A801/*.csv").read_csv()
+    met_files = readers(
+        bucket_url=TESTS_BUCKET_URL, file_glob="met_csv/A801/*.csv"
+    ).read_csv()
     # tell dlt to merge on date
     met_files.apply_hints(write_disposition="merge", merge_key="date")
     # NOTE: we load to met_csv table
@@ -30,7 +32,9 @@ def stream_and_merge_csv() -> None:
 
     # now let's simulate loading on next day. not only current data appears but also updated record for the previous day are present
     # all the records for previous day will be replaced with new records
-    met_files = readers(bucket_url=TESTS_BUCKET_URL, file_glob="met_csv/A801/*.csv").read_csv()
+    met_files = readers(
+        bucket_url=TESTS_BUCKET_URL, file_glob="met_csv/A801/*.csv"
+    ).read_csv()
     met_files.apply_hints(write_disposition="merge", merge_key="date")
     load_info = pipeline.run(met_files.with_name("met_csv"))
 
@@ -42,7 +46,7 @@ def stream_and_merge_csv() -> None:
 def read_csv_with_duckdb() -> None:
     pipeline = dlt.pipeline(
         pipeline_name="standard_filesystem",
-        destination='duckdb',
+        destination="duckdb",
         dataset_name="met_data_duckdb",
     )
 
@@ -60,7 +64,7 @@ def read_csv_with_duckdb() -> None:
 def read_csv_duckdb_compressed() -> None:
     pipeline = dlt.pipeline(
         pipeline_name="standard_filesystem",
-        destination='duckdb',
+        destination="duckdb",
         dataset_name="taxi_data",
         full_refresh=True,
     )
@@ -78,7 +82,7 @@ def read_csv_duckdb_compressed() -> None:
 def read_parquet_and_jsonl_chunked() -> None:
     pipeline = dlt.pipeline(
         pipeline_name="standard_filesystem",
-        destination='duckdb',
+        destination="duckdb",
         dataset_name="teams_data",
     )
     # When using the readers resource, you can specify a filter to select only the files you
@@ -86,7 +90,9 @@ def read_parquet_and_jsonl_chunked() -> None:
     # will include the path to the file inside the bucket_url.
 
     # JSONL reading (in large chunks!)
-    jsonl_reader = readers(TESTS_BUCKET_URL, file_glob="**/*.jsonl").read_jsonl(chunksize=10000)
+    jsonl_reader = readers(TESTS_BUCKET_URL, file_glob="**/*.jsonl").read_jsonl(
+        chunksize=10000
+    )
     # PARQUET reading
     parquet_reader = readers(TESTS_BUCKET_URL, file_glob="**/*.parquet").read_parquet()
     # load both folders together to specified tables
@@ -107,7 +113,9 @@ def read_custom_file_type_excel() -> None:
     # content of excel via pandas
 
     @dlt.transformer(standalone=True)
-    def read_excel(items: Iterator[FileItemDict], sheet_name: str) -> Iterator[TDataItems]:
+    def read_excel(
+        items: Iterator[FileItemDict], sheet_name: str
+    ) -> Iterator[TDataItems]:
         import pandas as pd
 
         for file_obj in items:
@@ -120,7 +128,7 @@ def read_custom_file_type_excel() -> None:
 
     load_info = dlt.run(
         freshman_xls.with_name("freshman"),
-        destination='duckdb',
+        destination="duckdb",
         dataset_name="freshman_data",
     )
     print(load_info)
@@ -130,7 +138,7 @@ def copy_files_resource(local_folder: str) -> None:
     """Demonstrates how to copy files locally by adding a step to filesystem resource and the to load the download listing to db"""
     pipeline = dlt.pipeline(
         pipeline_name="standard_filesystem_copy",
-        destination='duckdb',
+        destination="duckdb",
         dataset_name="standard_filesystem_data",
     )
 
@@ -155,7 +163,9 @@ def copy_files_resource(local_folder: str) -> None:
 
     # download to table "listing"
     # downloader = filesystem(TESTS_BUCKET_URL, file_glob="**").add_map(_copy)
-    load_info = pipeline.run(downloader.with_name("listing"), write_disposition="replace")
+    load_info = pipeline.run(
+        downloader.with_name("listing"), write_disposition="replace"
+    )
     # pretty print the information on data that was loaded
     print(load_info)
     print(pipeline.last_trace.last_normalize_info)
@@ -164,7 +174,7 @@ def copy_files_resource(local_folder: str) -> None:
 def read_files_incrementally_mtime() -> None:
     pipeline = dlt.pipeline(
         pipeline_name="standard_filesystem_incremental",
-        destination='duckdb',
+        destination="duckdb",
         dataset_name="file_tracker",
     )
 

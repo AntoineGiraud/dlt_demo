@@ -1,6 +1,5 @@
 import dlt
 from dlt.sources.rest_api import RESTAPIConfig, rest_api_source
-from dlt.sources.helpers.rest_client.paginators import PageNumberPaginator
 
 config: RESTAPIConfig = {
     "client": {

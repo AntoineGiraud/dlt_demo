@@ -1,10 +1,7 @@
 import dlt
-from dlt.sources.helpers import requests
 from dlt.sources.helpers.rest_client import RESTClient
 from dlt.sources.helpers.rest_client.auth import BearerTokenAuth
 from dlt.sources.helpers.rest_client.paginators import HeaderLinkPaginator
-
-import os
 
 
 @dlt.source

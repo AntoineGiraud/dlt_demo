@@ -42,7 +42,7 @@ def run_source() -> None:
     data = list(github_api_resource())
 
     # print the data yielded from resource
-    # print(data)  # noqa: T201
+    print(data)  # noqa: T201
 
     # run the pipeline with your parameters
     load_info = pipeline.run(github_api_source())
